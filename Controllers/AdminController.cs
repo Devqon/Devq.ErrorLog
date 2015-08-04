@@ -3,48 +3,62 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Web.Mvc;
-using Laughlin.ErrorLog.Models;
-using Laughlin.ErrorLog.ViewModels;
+using Devq.ErrorLog.Models;
+using Devq.ErrorLog.ViewModels;
 
-namespace Laughlin.ErrorLog.Controllers
+namespace Devq.ErrorLog.Controllers
 {
     public class AdminController : Controller {
         
         private string _basePath = string.Empty;
-        
-        public ActionResult Index(string selectedLogFileName)
+        private readonly string[] _types = {"error", "debug"};
+
+        public ActionResult Index(string selectedLogFileName, string selectedType)
         {
             _basePath = Server.MapPath(@"~/App_Data/Logs");
             var model = new IndexViewModel();
-            
-            var logFileName = string.IsNullOrEmpty(selectedLogFileName)
-                                 ? string.Format("orchard-error-{0}.{1}.{2}.log",
-                                                 DateTime.Now.Year,
-                                                 DateTime.Now.Month.ToString().PadLeft(2, '0'),
-                                                 DateTime.Now.Day.ToString().PadLeft(2, '0'))
-                                 : selectedLogFileName;
+            var type = string.IsNullOrEmpty(selectedType) ? _types[0] : selectedType;
+
+            string logFileName;
+
+            if (string.IsNullOrEmpty(selectedLogFileName) || GetType(selectedLogFileName) != selectedType) {
+                logFileName = string.Format("orchard-{0}-{1}.{2}.{3}.log",
+                        type,
+                        DateTime.Now.Year,
+                        DateTime.Now.Month.ToString().PadLeft(2, '0'),
+                        DateTime.Now.Day.ToString().PadLeft(2, '0'));
+            }
+            else {
+                logFileName = selectedLogFileName;
+            }
 
             var fullLogFilePath = _basePath + "/" + logFileName;
             model.LogDate = logFileName;
 
-            return View(GetModel(fullLogFilePath, model));
+            return View(GetModel(fullLogFilePath, model, type));
         }
 
-        private IndexViewModel GetModel(string fileName, IndexViewModel model)
-        {
-            var errorLogsOnly = (from p in Directory.GetFiles(_basePath, "*.log")
-                                 where p.IndexOf("orchard-error-", StringComparison.Ordinal) >= 0
-                                 select p.Substring(p.LastIndexOf('\\') + 1))
-                              .OrderByDescending(x => x)
-                              .ToList();
+        private IndexViewModel GetModel(string fileName, IndexViewModel model, string type) {
 
-            var dates = errorLogsOnly.Select(logFile => new SelectListItem
+            var logs = Directory
+                .GetFiles(_basePath, "*.log")
+                .Where(l => l.IndexOf(string.Format("orchard-{0}-", type), StringComparison.Ordinal) >= 0)
+                .Select(l => l.Substring(l.LastIndexOf("\\", StringComparison.Ordinal) + 1))
+                .OrderByDescending(l => l);
+            
+            var dates = logs.Select(logFile => new SelectListItem
             {
                 Text = logFile,
                 Value = logFile
-            }).ToList();
+            });
+
+            var types = _types.Select(t => new SelectListItem {
+                Text = t,
+                Value = t
+            });
 
             model.Dates = dates;
+            model.Types = types;
             
             using (var stream = System.IO.File.Open(fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
             {
@@ -69,6 +83,16 @@ namespace Laughlin.ErrorLog.Controllers
             }
 
             return model;
+        }
+
+        private string GetType(string file) {
+            foreach (var type in _types) {
+                if (file.IndexOf(type) > -1) {
+                    return type;
+                }
+            }
+
+            return _types[0];
         }
     }
 }

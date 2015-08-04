@@ -1,10 +1,10 @@
 Name: Error Log Viewer
 AntiForgery: enabled
-Author: Laughlin Constable
-Website: http://laughlin.com
-Version: 1.2
-OrchardVersion: 1.2
-Description: Shows a friendly view of the error log
+Author: Devqon
+Website: https://github.com/Devqon/Devq.ErrorLog
+Version: 1.0
+OrchardVersion: 1.0
+Description: Shows the error logs in the dashboard
 Category: Logging
 Features:
-    Laughlin.ErrorLog:
+    Devq.ErrorLog:

@@ -1,13 +1,15 @@
-﻿@model Laughlin.ErrorLog.ViewModels.IndexViewModel
+﻿@model Devq.ErrorLog.ViewModels.IndexViewModel
 
 @{
-    Style.Include("laughlin-errorlog.css");
+    Style.Include("devq-errorlog.css");
 }
 
 @using (Html.BeginFormAntiForgeryPost())
 {
     <span>View:</span>
-    @Html.DropDownList("SelectedLogFileName", Model.Dates, new { id = "dateList" })
+    @Html.DropDownList("SelectedLogFileName", Model.Dates, new { @class = "log-refresh-trigger" })
+    <span>Type:</span>
+    @Html.DropDownList("SelectedType", Model.Types, new { @class = "log-refresh-trigger" })
 }
 
 <hr/>
@@ -26,7 +28,7 @@
 {
     <script type="text/javascript">
         $(function () {
-            $('#dateList').change(function () {
+            $(".log-refresh-trigger").change(function () {
                 var selectedItem = $(this).val();
                 if (selectedItem) {
                     $(this).closest("form").submit();

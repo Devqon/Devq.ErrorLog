@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Web.Mvc;
-using Laughlin.ErrorLog.Models;
+using Devq.ErrorLog.Models;
 
-namespace Laughlin.ErrorLog.ViewModels
+namespace Devq.ErrorLog.ViewModels
 {
     public class IndexViewModel
     {
@@ -10,7 +10,9 @@ namespace Laughlin.ErrorLog.ViewModels
         public string LogText { get; set; }
         public string LogDate { get; set; }
         public List<LogItem> LogItems { get; set; }
-        
+
+        public IEnumerable<SelectListItem> Types { get; set; }
+        public string SelectedType { get; set; }
         public IEnumerable<SelectListItem> Dates { get; set; }
         public string SelectedDate { get; set; }
 

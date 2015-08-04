@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using Orchard.Localization;
+﻿using Orchard.Localization;
 using Orchard.Security;
 using Orchard.UI.Navigation;
 
-namespace Laughlin.ErrorLog
+namespace Devq.ErrorLog
 {
     public class AdminMenu : INavigationProvider
     {
@@ -18,7 +14,7 @@ namespace Laughlin.ErrorLog
             builder.AddImageSet("modules")
               .Add(T("Error Log"), "12",
                           menu => menu.Add(T("Error Log"), "12",
-                              item => item.Action("Index", "Admin", new { area = "Laughlin.ErrorLog" })
+                              item => item.Action("Index", "Admin", new { area = "Devq.ErrorLog" })
                                                                                 .Permission(StandardPermissions.SiteOwner)));
         }
     }
