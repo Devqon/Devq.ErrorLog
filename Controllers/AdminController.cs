@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
-using System.Web;
 using System.Web.Mvc;
 using Laughlin.ErrorLog.Models;
 using Laughlin.ErrorLog.ViewModels;
@@ -14,21 +12,17 @@ namespace Laughlin.ErrorLog.Controllers
         
         private string _basePath = string.Empty;
         
-        public AdminController() {
-            
-        }
-
-        public ActionResult Index(string SelectedLogFileName)
+        public ActionResult Index(string selectedLogFileName)
         {
             _basePath = Server.MapPath(@"~/App_Data/Logs");
             var model = new IndexViewModel();
             
-            var logFileName = string.IsNullOrEmpty(SelectedLogFileName)
+            var logFileName = string.IsNullOrEmpty(selectedLogFileName)
                                  ? string.Format("orchard-error-{0}.{1}.{2}.log",
                                                  DateTime.Now.Year,
                                                  DateTime.Now.Month.ToString().PadLeft(2, '0'),
                                                  DateTime.Now.Day.ToString().PadLeft(2, '0'))
-                                 : SelectedLogFileName;
+                                 : selectedLogFileName;
 
             var fullLogFilePath = _basePath + "/" + logFileName;
             model.LogDate = logFileName;
@@ -39,7 +33,7 @@ namespace Laughlin.ErrorLog.Controllers
         private IndexViewModel GetModel(string fileName, IndexViewModel model)
         {
             var errorLogsOnly = (from p in Directory.GetFiles(_basePath, "*.log")
-                                 where p.IndexOf("orchard-error-") >= 0
+                                 where p.IndexOf("orchard-error-", StringComparison.Ordinal) >= 0
                                  select p.Substring(p.LastIndexOf('\\') + 1))
                               .OrderByDescending(x => x)
                               .ToList();
